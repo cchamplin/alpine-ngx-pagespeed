@@ -8,6 +8,7 @@ url="https://developers.google.com/speed/pagespeed/module/"
 arch="x86_64"
 license="custom"
 depends="nginx libuuid apr apr-util libjpeg-turbo icu icu-libs"
+install="$pkgname.post-install"
 
 _nginx_pkg="nginx"
 _nginx_ver=1.9.11
@@ -49,7 +50,7 @@ prepare() {
 }
 
 build() {
-	_buildpng
+	_buildpng || return 1
 	cd "$_pkgdir"
 	./generate.sh -D use_system_libs=1 -D _GLIBCXX_USE_CXX11_ABI=0 -D use_system_icu=1 || return 1
 	cd "$_builddir"
@@ -68,6 +69,8 @@ build() {
 	cp -r "$_builddir"/pagespeed/automatic/pagespeed_automatic.a $_ngx_pagespeeddir/psol/lib/Release/linux/x64 || return 1
 	cd $_nginxdir
 	LD_LIBRARY_PATH=$pkgdir/usr/lib ./configure --with-ipv6 \
+	            --prefix=/var/lib/nginx \
+		    --modules-path=/usr/lib/nginx \
 	            --with-file-aio \
 		    --with-pcre-jit \
 		    --with-http_dav_module \
@@ -88,11 +91,17 @@ package() {
   cd $_nginxdir
   make DESTDIR="$pkgdir" install || return 1
 
+  # Recopy libpng12 to $pkgdir (it get's erased before package() is called
+  cd $_pngdir
+  make DESTDIR="$pkgdir" install || return 1
+
   # We don't want to include all of nginx only the pagespeed dynamic library
   rm -rf "$pkgdir"/usr/local/nginx/sbin
   rm -rf "$pkgdir"/usr/local/nginx/conf
   rm -rf "$pkgdir"/usr/local/nginx/html
   rm -rf "$pkgdir"/usr/local/nginx/logs
+  rm -rf "$pkgdir"/var/lib/nginx
+
 
   # We only want libpng12 libraries, none of the extra stuff
   rm -rf "$pkgdir"/usr/bin

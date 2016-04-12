@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mkdir -p /usr/local/nginx
+ln -s /usr/lib/nginx/modules /usr/local/nginx/modules
