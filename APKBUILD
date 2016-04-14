@@ -22,7 +22,7 @@ _ngx_pagespeed_ver=$pkgver
 _ngx_pagespeed_type="beta"
 
 _mod_ps="modpagespeed"
-makedepends="apr-dev apr-util-dev zlib-dev linux-headers openssl-dev libjpeg-turbo-dev icu-dev gperf"
+makedepends="apr-dev pcre-dev bash apache2-dev apr-util-dev zlib-dev linux-headers openssl-dev libjpeg-turbo-dev icu-dev gperf"
 
 source="mod-pagespeed-$pkgver.tar.bz2::https://dl.google.com/dl/linux/mod-pagespeed/tar/beta/mod-pagespeed-beta-$pkgver-r0.tar.bz2
         $_nginx_pkg-$_nginx_ver.tar.gz::http://nginx.org/download/$_nginx_pkg-$_nginx_ver.tar.gz
